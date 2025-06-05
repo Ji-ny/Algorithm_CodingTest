@@ -10,57 +10,52 @@ let I = null; // 도연이 시작 위치 [row, col]
 let nCount = 0;
 let data = [];
 
-const solution = (N, M, I, data) => {
-  let queue = [I]; // 시작 지점 저장
-  // 도연의 위치는 탐색 안하는 곳으로 설정
-  let peopleCount = 0; // 사람 수
-  let headIdx = 0; // 배열을 큐로 쓰되, headIdx를 관리해서 O(1)로 꺼내도록 한다.
+let personCount = 0;
 
-  data[I[0]][I[1]] = "X";
+const dfs = (row, col) => {
+  // console.log(row, col);
+  // data.forEach((item) => {
+  //   console.log(item);
+  // });
+  // 주어진 범위를 벗어나면 즉시 종료하자.
+  if (row < 0 || row >= N || col < 0 || col >= M) {
+    // *벽이라도 패스
+    return;
+  }
 
-  // 상, 하, 좌, 우
+  if (data[row][col] === "X") {
+    return;
+  }
+
+  // * 사람이 있는 곳이라면 "P" count +=1
+  if (data[row][col] === "P") {
+    personCount++; // 사람수 1 증가
+  }
+  // * 왔던 위치 방문처리
+  data[row][col] = "X";
+
+  // console.log(personCount);
+  // * 내 위치 기준으로 상,하,좌,우를 dfs로 찾는다.
   const dRow = [-1, 1, 0, 0];
   const dCol = [0, 0, -1, 1];
 
-  while (headIdx < queue.length) {
-    // shift() 대신 headIdx를 써서 O(1)로 꺼낸다.
-    let [row, col] = queue[headIdx++]; // 현 위치 저장
-    // let [row, col] = queue.shift(); // 현 위치 저장
-
-    // 상, 하, 좌, 우 앞으로 가게 될 미래 위치 구하기
-    for (let i = 0; i < 4; i++) {
-      let newRow = row + dRow[i];
-      let newCol = col + dCol[i];
-
-      // 새로운 위치가 범위를 벗어나거나 벽이라면 패스
-      if (
-        newRow < 0 ||
-        newRow >= N ||
-        newCol < 0 ||
-        newCol >= M ||
-        data[newRow][newCol] === "X"
-      ) {
-        continue;
-      }
-
-      // 새로운 위치에 사람이 있다면 (P) count 1 증가
-      if (data[newRow][newCol] === "P") {
-        peopleCount++;
-      }
-
-      // 새로운 위치가 빈 공간(O) 이거나 사람이 있다면 현재 위치 저장!
-      queue.push([newRow, newCol]); // 현재 위치 추가
-      data[newRow][newCol] = "X"; // 그냥 벽으로 업데이트
-    }
-
-    // console.log(row, col);
-    // data.forEach((item) => {
-    //   console.log(item);
-    // });
+  for (let i = 0; i < 4; i++) {
+    dfs(row + dRow[i], col + dCol[i]);
   }
 
-  if (peopleCount > 0) {
-    console.log(peopleCount);
+  return;
+};
+
+const solution = (N, M, I, data) => {
+  // 도연의 위치는 탐색 안하는 곳으로 설정
+
+  // * dfs 수행
+  // 시작 위치부터 한다.
+
+  dfs(I[0], I[1]);
+
+  if (personCount > 0) {
+    console.log(personCount);
   } else {
     console.log("TT");
   }
