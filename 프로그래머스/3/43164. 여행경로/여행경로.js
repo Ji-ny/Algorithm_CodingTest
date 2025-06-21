@@ -1,47 +1,38 @@
+// 1. 항상 ICN 공앙에서 출발 ( 출발지 리스트)
+//2. tickest 배열에서 방문하는 공항 경로를 DFS로 탐색하여 리턴
+//ticket은 [출발 -> 도착] 임 
+// A의 도착지, B의 출발지가 같아야 그 경로로 탐색 가능
+
 function solution(tickets) {
     var answer = [];
+    //* 각 티켓당 방문했는지 확인할 수 있어야 한다. 
+    let visited = new Array(tickets.length).fill(false); // A,B,C,D 공항 
     
-    // 1. 공항별로 방문표시를 해야함. 그러기 위해서는 index로 만들어줘야함 
-    // false로 이루어진 tickets length만큼 
-    let visited = new Array(tickets.length).fill(false);
-    console.log(visited)
-    
-    // DFS 알고리즘을 구현한다. [현재 시작할 위치, 현재까지 이동한 경로]
+    // * dfs로 현재 출발지, 경로를 저장해야함 
     const dfs = (start, path) => {
-        //만약 현재까지 이동한 경로가 모든 티켓을 사용한 경로라면
+        // 모두 나온 경로가 모두 방문했다면, 경로 추가
         if (path.length === tickets.length+1) {
-            answer.push(path); // 결과 배열에 추가
-            return;  // 해당 경로는 찾았으므로 dfs 종료
+            answer.push(path);
+            return; // 해당 분기는 끝.
         }
         
-        // 아직 티켓 다 안쓰고 경로를 모두 탐색 못했다면
-        // 티켓을 1번부터 하나씩 불러온다.
-        tickets.forEach( (ticket, index) => {
-            // 아직 방문 안했고, 현재 출발지와 같은 티켓이라면
+        // 티켓을 순회하면서 방문 안한곳이고, 현재 출발지가 될 곳과 동일한 출발지라면, 그 경로로 dfs
+        tickets.forEach((ticket, index) => {
             if (!visited[index] && start === ticket[0]) {
-                // 현재 경로 방문 처리
+                //현재 위치를 방문 처리!
                 visited[index] = true;
-                // 이 경로로 dfs 추가 진행
-                dfs(ticket[1], [...path, ticket[1]]) // 해당 티켓으로 도착한 뒤 dfs 진행하도록 
-                // 이동 다찍었으면 방문처리 해제
+                //그 경로로 dfs
+                dfs(ticket[1], [...path, ticket[1]]);
+                // * dfs가 종료되면, 방문을 끝낸다. ( 다른 경로로도 dfs 해야하므로)
                 visited[index] = false;
-            } 
-            
-        })
-        
-        
+
+            }
+
+        });
     }
     
-    // 처음 출발지, 경로 시작 (첫 위치는 무조근 ICN시작)
-    dfs("ICN", ["ICN"]);
+    dfs("ICN", ["ICN"]); //ICN경로!
+
     
-    // 결과 경로들을 정렬해서, 제일 앞에 있는 친구를 반환
-    answer.sort();
-    
-    
-//     1. 첫 경로는 무조건 ["ICN"] 으로 시작한다
-//     2. 하나 경로를 정해서 뒤로 쭉쭉 dfs한다
-//     2.1. 다시 경로 다돌았으면 방문 해제
-    
-    return answer[0];
+    return answer.sort()[0];
 }
