@@ -47,9 +47,8 @@ for test_case in range(1, T+1):
         person = 0        
         
         # 노드 DFS 
-        big =  dfs (i, [False] * (N+1), smallToBigList )
-        small =  dfs (i, [False] * (N+1), bigToSmallList )
-        person = big + small
+        person += dfs (i, [False] * (N+1), smallToBigList )
+        person += dfs (i, [False] * (N+1), bigToSmallList )
         # 만약 찾은 사람 수가 앞뒤로 N-1명이라면?
         if person == (N-1):
             answer+=1
