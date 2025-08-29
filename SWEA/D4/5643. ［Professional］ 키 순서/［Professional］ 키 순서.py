@@ -1,60 +1,58 @@
-# 기본 제공코드는 임의 수정해도 관계 없습니다. 단, 입출력 포맷 주의
-# 아래 표준 입출력 예제 필요시 참고하세요.
+# 
+## *
+# ! 키순서 
 
 T = int(input())
-# 여러개의 테스트 케이스가 주어지므로, 각각을 처리합니다.
 
-def dfs(node, visited, array):
-    # 현재 노드 이미 방문했다면? 패스 
-    # 현재 노드 방문 처리 
-    visited[node] = True
+# DFS를 위해서 함수 구현하기
+def dfs(node, visited, graph):
+    count = 0
+    visited[node] = True # 방문처리 
+    stack = [node]
 
-    # 현재 노드와 연결된 노드 탐색
-    for nextNode in array[node]:
-        # 만약 연결되어 있고 방문한곳이 아니라면? 
-        if not visited[nextNode]:
-            visited = dfs(nextNode, visited, array) # 연결하기 
+    while stack:
+        nowNode = stack.pop()    
+        # 나와 연결된 노드 방문처리 
+        for nextNode in graph[nowNode]:
+            # 방문하지 않은 곳이라면 이곳 추가 
+            if not visited[nextNode]:
+                visited[nextNode] = True # 새로운곳 방문 처리 우선 
+                count +=1 
+                # 현재 노드 추가
+                stack.append(nextNode)
 
-    # 모두 끝난 다음에, 해당 dfs가 되는지 확인 
-    return visited
+    return count # 현재 자기와 연결된 친구들 
 
 
-for test_case in range(1, T + 1):
-    N = int(input()) # 학생 수 
-    M = int(input()) # 학생 키 비교 
+for test_case in range(1, T+1):
+    answer = 0
+    N = int(input()) # 학생들의 수
+    M = int(input())# 두 학생의 키를 비교한 횟수 M
+    bigToSmallList = [[] for _ in range(N+1)] # 큰 -> 작 리스트 (0번은 제외)
+    smallToBigList = [[] for _ in range(N+1)] # 작 -> 큰 리스트
 
-    #리스트 해당 index에 연결되어 있는 다른 친구들 
-    smallToBig = [[] for _ in range(N+1)] # 작 -> 큰 (학생수는 1 ~ N까지라서 ) 
-    bigToSmall = [[] for _ in range(N+1)] # 큰 -> 작 
+    # M개의 줄에 걸쳐 두 학생의 키를 비교한 결과 a-> b 작->큰
 
-    count = 0 # 모두 연결된 것 찾은 개수 
-
-    # 연결 
     for i in range(M):
-        a, b = map(int, input().split(" "))
-        smallToBig[a].append(b) # 작 -> 큰 
-        bigToSmall[b].append(a) # 큰 -> 작 
-    
-    # 1 ~ N번 노드까지 탐색 
-    for node in range(1, N+1):
-        visited = [False] * (N+1) # 0 ~ N번 노드까지 (0번 인덱스는 제외할거!)
+        start, end = map(int, input().split(" "))
+        # 작 -> 큰 리스트에 추가 
+        smallToBigList[start].append(end)
+        # 큰 -> 작 리스트에 추가 
+        bigToSmallList[end].append(start)
 
-        samllToBigVisited = dfs(node, visited, smallToBig)
+    # 이제 완전탐색을 한다.
+    # (각 노드별로 자기보다 큰친구, 작은 친구가 몇명인지 구할 것 )
 
-        visited = [False] * (N+1) # 0 ~ N번 노드까지 (0번 인덱스는 제외할거!)
-
-        bigToSamllVisited = dfs(node, visited, bigToSmall)
-
-        state = True
-        for i in range(1, N+1):
-            if not (samllToBigVisited[i] or bigToSamllVisited[i]):
-                state = False
-                break
+    for i in range(1, N+1):
+        person = 0        
         
-        if state:
-            count += 1
-    
-    print(f'#{test_case} {count}')
-
-
+        # 노드 DFS 
+        big =  dfs (i, [False] * (N+1), smallToBigList )
+        small =  dfs (i, [False] * (N+1), bigToSmallList )
+        person = big + small
+        # 만약 찾은 사람 수가 앞뒤로 N-1명이라면?
+        if person == (N-1):
+            answer+=1
+        
+    print(f'#{test_case} {answer}')
 
