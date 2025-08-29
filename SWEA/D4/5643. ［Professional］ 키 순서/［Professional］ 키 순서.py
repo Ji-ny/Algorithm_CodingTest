@@ -24,6 +24,19 @@ def dfs(node, visited, graph):
     return count # 현재 자기와 연결된 친구들 
 
 
+# DFS를 위해서 함수 구현하기
+def dfs_recursive(node, visited, graph, count):
+    # 나와 연결된 노드 방문처리 
+    for nextNode in graph[node]:
+        # 방문하지 않은 곳이라면 이곳 추가 
+        if not visited[nextNode]:
+            visited[nextNode] = True # 새로운곳 방문 처리 우선 
+            count = dfs_recursive(nextNode, visited, graph, count+1)
+
+    return count # 현재 자기와 연결된 친구들 
+
+
+
 for test_case in range(1, T+1):
     answer = 0
     N = int(input()) # 학생들의 수
@@ -45,10 +58,10 @@ for test_case in range(1, T+1):
 
     for i in range(1, N+1):
         person = 0        
-        
+        visited = [False] * (N+1)
         # 노드 DFS 
-        person += dfs (i, [False] * (N+1), smallToBigList )
-        person += dfs (i, [False] * (N+1), bigToSmallList )
+        person += dfs_recursive (i, visited, smallToBigList, 0 )
+        person += dfs_recursive (i, visited, bigToSmallList, 0 )
         # 만약 찾은 사람 수가 앞뒤로 N-1명이라면?
         if person == (N-1):
             answer+=1
